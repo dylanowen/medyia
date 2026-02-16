@@ -1,0 +1,32 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window and remote streaming domains",
+  "windows": ["MAIN_WINDOW"],
+  "webviews": ["MAIN_WEBVIEW", "youtube-*", "apple-music-*", "soundcloud-*"],
+  "permissions": [
+    "core:default",
+    "store:default",
+    "log:default",
+    "core:event:default",
+    "core:event:allow-emit",
+    "core:event:allow-listen"
+  ],
+  "remote": {
+    "urls": [
+      "https://www.youtube.com/*",
+      "https://youtube.com/*",
+      "https://accounts.google.com/*",
+      "https://accounts.youtube.com/*",
+      "https://consent.youtube.com/*",
+      "https://consent.google.com/*",
+      "https://myaccount.google.com/*",
+      "https://music.apple.com/*",
+      "https://appleid.apple.com/*",
+      "https://idmsa.apple.com/*",
+      "https://soundcloud.com/*",
+      "https://secure.soundcloud.com/*",
+      "https://api-v2.soundcloud.com/*"
+    ]
+  }
+}

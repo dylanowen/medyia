@@ -1,0 +1,43 @@
+.media-source-bar {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 76px;
+    background: #1a1a1a;
+    border-right: 1px solid #333;
+    padding: 0 12px;
+    gap: 6px;
+}
+
+.media-source-add-button {
+    /*display: flex;*/
+    /*align-items: center;*/
+    /*gap: 70px;*/
+    /*height: 34px;*/
+    padding: 10px 10px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: transparent;
+    color: #888;
+    cursor: pointer;
+    font-size: 12px;
+    transition: border-color 0.15s, color 0.15s;
+}
+
+.media-source-add-button:hover {
+    border-color: #888;
+    color: #ccc;
+}
+
+.media-source-add-button--active {
+    background: #444;
+    color: #fff;
+}
+
+.media-source-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 4px;
+    flex-shrink: 0;
+    object-fit: contain;
+}
