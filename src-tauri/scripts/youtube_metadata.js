@@ -1,5 +1,5 @@
 // YouTube metadata extractor
-window.__medya_getMetadata = function () {
+window.__medyia_getMetadata = function () {
   const title =
     document.querySelector('#info h1 yt-formatted-string')?.textContent?.trim() ||
     document.querySelector('h1.ytd-watch-metadata yt-formatted-string')?.textContent?.trim() ||

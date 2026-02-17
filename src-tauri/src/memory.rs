@@ -1,11 +1,10 @@
 use log::error;
-use std::sync::Mutex;
 use std::time::{Duration, Instant};
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 use tokio::time;
 
-use crate::tabs_state::{TabStatus, TabsState};
-use crate::{webview_manager, EnhancedManager, EnhancedManagerEmitter};
+use crate::tabs_state::TabStatus;
+use crate::EnhancedManagerEmitter;
 
 const CHECK_INTERVAL: Duration = Duration::from_secs(30);
 const UNLOAD_TIMEOUT: Duration = Duration::from_mins(15);
@@ -29,11 +28,9 @@ fn check_idle_tabs(app: &AppHandle) {
             if Some(key.as_str()) != tabs_state.active_tab_key.as_deref()
                 && !tab.is_playing
                 && tab.status != TabStatus::Unloaded
-            {
-                if now.duration_since(tab.last_interaction) >= UNLOAD_TIMEOUT {
+                && now.duration_since(tab.last_interaction) >= UNLOAD_TIMEOUT {
                     tab.unload_tab(app)?;
                 }
-            }
         }
         Ok(())
     }) {

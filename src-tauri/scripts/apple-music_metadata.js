@@ -1,5 +1,5 @@
 // Apple Music metadata extractor
-window.__medya_getMetadata = function () {
+window.__medyia_getMetadata = function () {
   const title =
     document.querySelector('.web-chrome-playback-lcd__song-name-scroll-inner')?.textContent?.trim() ||
     document.querySelector('[class*="playback-lcd"] [class*="song-name"]')?.textContent?.trim() ||

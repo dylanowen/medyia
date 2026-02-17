@@ -29,22 +29,22 @@ export interface BackendState {
 }
 
 export async function createTab(source: MediaSource): Promise<TabKey> {
-    console.log("[medya] creating tab:", source);
+    console.log("[medyia] creating tab:", source);
     return await invoke("create_tab", {source});
 }
 
 export async function switchTab(key: TabKey) {
-    console.log("[medya] switching to tab:", key);
+    console.log("[medyia] switching to tab:", key);
     await invoke("switch_tab", {key});
 }
 
 export async function closeTab(key: TabKey) {
-    console.log("[medya] closing tab:", key);
+    console.log("[medyia] closing tab:", key);
     await invoke("close_tab", {key});
 }
 
 export async function getBackendState(): Promise<BackendState> {
-    console.log("[medya] getting backend state");
+    console.log("[medyia] getting backend state");
     return await invoke("get_backend_state");
 }
 

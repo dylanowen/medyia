@@ -116,7 +116,7 @@ fn handle_title_changed(app: &AppHandle, event: TitleChangedEvent) {
     if let Some(tab) = state.tabs.get_mut(&event.label) {
         // Only update display name for multi-instance sources
         if tab.source.multi_instance() {
-            let clean = clean_page_title(&event.title, &tab.source.name());
+            let clean = clean_page_title(&event.title, tab.source.name());
             if !clean.is_empty() {
                 debug!("Tab {} title changed: {}", event.label, clean);
                 tab.display_name = clean;

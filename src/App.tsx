@@ -37,13 +37,13 @@ export default function App() {
 //
 //     const refreshTabs = useCallback(async () => {
 //         const [tabList, active] = await getTabs()
-//         console.log("[medya] tabs refreshed:", tabList);
+//         console.log("[medyia] tabs refreshed:", tabList);
 //         setTabs(tabList);
 //         setActiveTab(active);
 //     }, []);
 //
 //     useEffect(() => {
-//         console.log("[medya] App mounted, setting up listeners");
+//         console.log("[medyia] App mounted, setting up listeners");
 //         getSources().then((sources) => {
 //             const sourcesMap = new Map();
 //             for (const source of sources) {
@@ -54,12 +54,12 @@ export default function App() {
 //         refreshTabs();
 //
 //         const unlisten = listen("playback-changed", () => {
-//             console.log("[medya] playback-changed event received");
-//             debug("[medya] playback-changed event received");
+//             console.log("[medyia] playback-changed event received");
+//             debug("[medyia] playback-changed event received");
 //             refreshTabs();
 //         });
 //
-//         unlisten.then(() => console.log("[medya] playback-changed listener registered"));
+//         unlisten.then(() => console.log("[medyia] playback-changed listener registered"));
 //
 //         return () => {
 //             unlisten.then((fn) => fn());

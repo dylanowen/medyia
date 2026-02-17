@@ -1,5 +1,5 @@
 // SoundCloud metadata extractor
-window.__medya_getMetadata = function () {
+window.__medyia_getMetadata = function () {
   const titleEl = document.querySelector('.playbackSoundBadge__titleLink');
   const title = titleEl?.getAttribute('title') || titleEl?.textContent?.trim() || document.title;
 

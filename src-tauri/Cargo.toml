@@ -1,12 +1,12 @@
 [package]
-name = "medya"
+name = "medyia"
 version = "0.1.0"
 description = "A macOS web-based media player"
 authors = ["Dylan Owen"]
 edition = "2024"
 
 [lib]
-name = "medya_lib"
+name = "medyia_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

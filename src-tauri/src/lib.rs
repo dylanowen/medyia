@@ -15,7 +15,6 @@ use tauri::{Emitter, LogicalSize, Manager, Runtime, Webview, Window};
 
 use crate::tabs_state::{TabKey, TabState, TabsState};
 pub use run::*;
-use crate::osx_utils::title_bar_height;
 
 pub const MAIN_WINDOW: &str = "MAIN_WINDOW";
 pub const MAIN_WEBVIEW: &str = "MAIN_WINDOW";
@@ -56,7 +55,7 @@ where
     {
         let mutex = self.state::<Mutex<TabsState>>();
         let mut state = mutex.lock().unwrap();
-        f(&mut *state)
+        f(&mut state)
     }
 }
 
@@ -77,7 +76,7 @@ where
     {
         let mutex = self.state::<Mutex<TabsState>>();
         let mut state = mutex.lock().unwrap();
-        let result = f(&mut *state)?;
+        let result = f(&mut state)?;
 
         // after mutating our event emit an updated tab event
         self.emit(BACKEND_STATE_EVENT, state.state())?;

@@ -152,7 +152,7 @@ impl TabsState {
                 }
 
                 let new_active_tab_key = &self.tab_order[next_i].clone();
-                self.show_tab(&new_active_tab_key, app)?;
+                self.show_tab(new_active_tab_key, app)?;
             }
 
             if Some(&tab.key) == self.playing_tab_key.as_ref() {
@@ -205,12 +205,9 @@ impl TabsState {
 
     fn can_create_tab(&self, source: MediaSource) -> bool {
         source.multi_instance()
-            || self
+            || !self
                 .tabs
-                .values()
-                .filter(|t| t.source == source)
-                .next()
-                .is_none()
+                .values().any(|t| t.source == source)
     }
 }
 
@@ -256,7 +253,7 @@ impl TabState {
         R: Runtime,
     {
         if let Some(webview) = self.webview(app) {
-            if let Some(url) = webview.url().ok() {
+            if let Ok(url) = webview.url() {
                 self.url = url;
             }
 

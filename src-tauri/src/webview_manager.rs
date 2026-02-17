@@ -1,13 +1,10 @@
 use crate::media_sources::MediaSource;
-use crate::tabs_state::{TabKey, TabState, TabStatus, TabsState};
-use crate::{EnhancedManager, EnhancedManagerEmitter};
-use anyhow::anyhow;
-use log::{debug, error, trace};
-use std::sync::Mutex;
+use crate::tabs_state::{TabKey, TabState, TabStatus};
+use crate::EnhancedManagerEmitter;
+use log::debug;
 use std::time::Instant;
 use tauri::{
-    AppHandle, LogicalPosition, LogicalSize, Manager, Runtime, Url, Webview, WebviewBuilder,
-    WebviewUrl,
+    AppHandle, Url,
 };
 
 pub fn create_tab(
@@ -40,11 +37,11 @@ pub fn create_tab(
 }
 
 pub fn switch_to_tab(app: &AppHandle, key: &str) -> anyhow::Result<()> {
-    app.tabs_state_mut(|tabs_state| tabs_state.show_tab(&key, app))
+    app.tabs_state_mut(|tabs_state| tabs_state.show_tab(key, app))
 }
 
 pub fn close_tab(app: &AppHandle, key: &str) -> anyhow::Result<()> {
-    app.tabs_state_mut(|tabs_state| tabs_state.close_tab(&key, app))
+    app.tabs_state_mut(|tabs_state| tabs_state.close_tab(key, app))
 }
 
 pub fn relayout(app: &AppHandle) -> anyhow::Result<()> {

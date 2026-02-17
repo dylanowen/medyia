@@ -12,8 +12,8 @@ static MEDIA_CONTROLS: Mutex<Option<MediaControls>> = Mutex::new(None);
 
 pub fn setup_media_keys(app: &AppHandle) {
     let config = PlatformConfig {
-        dbus_name: "medya",
-        display_name: "Medya",
+        dbus_name: "medyia",
+        display_name: "Medyia",
         hwnd: None,
     };
 
@@ -57,8 +57,8 @@ fn forward_play_pause(app: &AppHandle, play: bool) {
             .or_else(|| state.active_tab_key.clone())
     };
 
-    if let Some(label) = label {
-        if let Some(wv) = app.get_webview(&label) {
+    if let Some(label) = label
+        && let Some(wv) = app.get_webview(&label) {
             let js = if play {
                 "document.querySelector('video, audio')?.play();"
             } else {
@@ -66,7 +66,6 @@ fn forward_play_pause(app: &AppHandle, play: bool) {
             };
             let _ = wv.eval(js);
         }
-    }
 }
 
 fn forward_toggle(app: &AppHandle) {
@@ -79,13 +78,12 @@ fn forward_toggle(app: &AppHandle) {
             .or_else(|| state.active_tab_key.clone())
     };
 
-    if let Some(label) = label {
-        if let Some(wv) = app.get_webview(&label) {
+    if let Some(label) = label
+        && let Some(wv) = app.get_webview(&label) {
             let _ = wv.eval(
                 "(() => { const el = document.querySelector('video, audio'); if (el) { el.paused ? el.play() : el.pause(); } })();",
             );
         }
-    }
 }
 
 fn forward_next_previous(app: &AppHandle, next: bool) {
@@ -99,12 +97,12 @@ fn forward_next_previous(app: &AppHandle, next: bool) {
         let sid = l
             .as_ref()
             .and_then(|l| state.tabs.get(l))
-            .map(|t| t.source.clone());
+            .map(|t| t.source);
         (l, sid)
     };
 
-    if let (Some(label), Some(source)) = (label, source_id) {
-        if let Some(wv) = app.get_webview(&label) {
+    if let (Some(label), Some(source)) = (label, source_id)
+        && let Some(wv) = app.get_webview(&label) {
             let selector = if next {
                 source.next_selector()
             } else {
@@ -113,7 +111,6 @@ fn forward_next_previous(app: &AppHandle, next: bool) {
             let js = format!("document.querySelector('{}')?.click();", selector);
             let _ = wv.eval(&js);
         }
-    }
 }
 
 pub fn update_now_playing(title: Option<&str>, artist: Option<&str>, playing: bool) {

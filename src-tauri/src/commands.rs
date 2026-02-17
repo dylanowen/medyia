@@ -1,10 +1,7 @@
-use std::collections::HashMap;
-use std::sync::Mutex;
-use serde::Serialize;
 use tauri::{AppHandle, Manager};
 
 use crate::media_sources::{MediaSource, MediaDefinition};
-use crate::tabs_state::{TabKey, TabState, TabsState};
+use crate::tabs_state::{TabKey, TabsState};
 use crate::{webview_manager, BackendState, EnhancedManager};
 
 #[tauri::command]
@@ -31,7 +28,7 @@ pub fn close_tab(app: AppHandle, key: TabKey) -> tauri::Result<()> {
 #[tauri::command]
 pub fn get_sources() -> Vec<MediaDefinition> {
     MediaSource::ALL
-        .into_iter()
+        .iter()
         .map(MediaSource::definition)
         .collect()
 }

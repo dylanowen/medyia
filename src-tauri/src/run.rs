@@ -7,7 +7,7 @@ use log::error;
 use std::sync::Mutex;
 use tauri::menu::{MenuBuilder, MenuItem, SubmenuBuilder};
 use tauri::{
-    Builder, LogicalPosition, Manager, TitleBarStyle, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent,
+    Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent,
 };
 
 #[cfg_attr(mobile, mobile_entry_point)]
@@ -52,7 +52,7 @@ pub fn run() {
 
             // Create window programmatically (no config-created WebviewWindow)
             let window = WindowBuilder::new(app, MAIN_WINDOW)
-                .title("Medya")
+                .title("Medyia")
                 .inner_size(1400.0, 1000.0)
                 .min_inner_size(800.0, 600.0)
                 .build()?;
@@ -73,7 +73,7 @@ pub fn run() {
             //     MAIN_WINDOW,
             //     WebviewUrl::App("index.html".into()),
             // )
-            //     .title("Medya")
+            //     .title("Medyia")
             //     .inner_size(1400.0, 1000.0)
             //     .min_inner_size(800.0, 600.0)
             //     .build()?;

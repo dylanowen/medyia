@@ -7,7 +7,7 @@ use tauri::{AppHandle, Manager};
 use tauri_plugin_store::StoreExt;
 use url::Url;
 
-const STORE_PATH: &str = "medya-session.json";
+const STORE_PATH: &str = "medyia-session.json";
 const SESSION_KEY: &str = "session";
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,7 +34,7 @@ pub fn save_session(app: &AppHandle) {
             .filter_map(|label| {
                 state.tabs.get(label).map(|tab| SavedTab {
                     label: tab.key.clone(),
-                    source_id: tab.source.clone(),
+                    source_id: tab.source,
                     url: tab.url.clone(),
                 })
             })

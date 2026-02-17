@@ -7,9 +7,9 @@
   let lastState = null;
 
   function getMetadata() {
-    // Service-specific metadata extractors override this via window.__medya_getMetadata
-    if (typeof window.__medya_getMetadata === 'function') {
-      return window.__medya_getMetadata();
+    // Service-specific metadata extractors override this via window.__medyia_getMetadata
+    if (typeof window.__medyia_getMetadata === 'function') {
+      return window.__medyia_getMetadata();
     }
     return { title: document.title, artist: null, artworkUrl: null };
   }
