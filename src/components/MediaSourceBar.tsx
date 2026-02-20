@@ -1,4 +1,5 @@
 import {useSources} from "../utils.tsx";
+import {MediaSource} from "../commands.ts";
 
 import "./MediaSourceBar.css";
 

@@ -65,8 +65,8 @@ pub fn run() {
             )?;
 
             // Open devtools for all webviews in debug builds
-            #[cfg(debug_assertions)]
-            main_view.open_devtools();
+            // #[cfg(debug_assertions)]
+            // main_view.open_devtools();
 
             // let window = WebviewWindowBuilder::new(
             //     app,

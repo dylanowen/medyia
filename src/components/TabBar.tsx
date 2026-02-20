@@ -1,5 +1,5 @@
 import {TabItem} from "./TabItem";
-import {TabKey, TabState} from "../commands.ts";
+import {MediaSource, TabKey, TabState} from "../commands.ts";
 import {useContext} from "react";
 import {MediaSourcesContext} from "../utils.tsx";
 

@@ -1,14 +1,17 @@
 use crate::media_sources::MediaSource;
+use crate::osx_utils::{enable_swipe_navigation, title_bar_height};
 use crate::{window_size, BackendState, EnhancedManager};
 use anyhow::anyhow;
 use log::error;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::Mutex;
-use std::time::Instant;
-use tauri::{LogicalPosition, LogicalSize, Manager, Runtime, Webview, WebviewBuilder, WebviewUrl};
+use std::time::{Duration, Instant};
+use tauri::{
+    Listener, LogicalPosition, LogicalSize, Manager, Runtime, Webview, WebviewBuilder, WebviewUrl,
+};
+use tokio::time::sleep;
 use url::Url;
-use crate::osx_utils::{enable_swipe_navigation, title_bar_height};
 
 pub const TAB_BAR_HEIGHT: f64 = 56.0;
 pub const MEDIA_SOURCE_BAR_WIDTH: f64 = 76.;
@@ -168,6 +171,7 @@ impl TabsState {
         M: Manager<R>,
         R: Runtime,
     {
+        // TODO, can I do this automatically? it kind of seems like it
         match window_size(app) {
             Ok(window_size) => {
                 let title_height = title_bar_height(&app.main_window());
@@ -204,10 +208,7 @@ impl TabsState {
     }
 
     fn can_create_tab(&self, source: MediaSource) -> bool {
-        source.multi_instance()
-            || !self
-                .tabs
-                .values().any(|t| t.source == source)
+        source.multi_instance() || !self.tabs.values().any(|t| t.source == source)
     }
 }
 
@@ -252,12 +253,20 @@ impl TabState {
         M: Manager<R>,
         R: Runtime,
     {
+        self.hide(app)?;
         if let Some(webview) = self.webview(app) {
             if let Ok(url) = webview.url() {
                 self.url = url;
             }
 
-            webview.close()?;
+            webview.navigate(Url::parse("about:blank").unwrap())?;
+            tauri::async_runtime::spawn(async move {
+                // give our webview time to navigate to about:blank
+                sleep(Duration::from_millis(100)).await;
+                if let Err(e) = webview.close() {
+                    error!("Couldn't close webview: {e:?}");
+                }
+            });
         }
         self.status = TabStatus::Unloaded;
 
@@ -284,7 +293,12 @@ impl TabState {
         Ok(web_view)
     }
 
-    fn relayout<M, R>(&self, window_size: LogicalSize<f64>, title_bar_height: f64, app: &M) -> tauri::Result<()>
+    fn relayout<M, R>(
+        &self,
+        window_size: LogicalSize<f64>,
+        title_bar_height: f64,
+        app: &M,
+    ) -> tauri::Result<()>
     where
         M: Manager<R>,
         R: Runtime,
@@ -306,7 +320,13 @@ impl TabState {
         app.get_webview(&self.key)
     }
 
-    fn size(&self, LogicalSize { width: windowWidth, height: windowHeight }: LogicalSize<f64>) -> LogicalSize<f64> {
+    fn size(
+        &self,
+        LogicalSize {
+            width: windowWidth,
+            height: windowHeight,
+        }: LogicalSize<f64>,
+    ) -> LogicalSize<f64> {
         #[cfg(debug_assertions)]
         const DEV_TOOLS_OFFSET: f64 = 400.;
         #[cfg(not(debug_assertions))]
@@ -318,7 +338,10 @@ impl TabState {
                 windowHeight - TAB_BAR_HEIGHT - DEV_TOOLS_OFFSET,
             )
         } else {
-            LogicalSize::new(windowWidth - MEDIA_SOURCE_BAR_WIDTH, windowHeight - DEV_TOOLS_OFFSET)
+            LogicalSize::new(
+                windowWidth - MEDIA_SOURCE_BAR_WIDTH,
+                windowHeight - DEV_TOOLS_OFFSET,
+            )
         }
     }
 
@@ -326,10 +349,7 @@ impl TabState {
         if self.source.multi_instance() {
             LogicalPosition::new(MEDIA_SOURCE_BAR_WIDTH, TAB_BAR_HEIGHT + title_bar_height)
         } else {
-            LogicalPosition::new(MEDIA_SOURCE_BAR_WIDTH,  title_bar_height)
+            LogicalPosition::new(MEDIA_SOURCE_BAR_WIDTH, title_bar_height)
         }
     }
 }
-
-
-
