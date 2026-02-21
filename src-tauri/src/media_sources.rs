@@ -137,7 +137,7 @@ define_sources! {
     },
     YouTube {
         name: "YouTube",
-        icon_url: "https://www.youtube.com/favicon.ico",
+        icon_url: "https://www.youtube.com/img/favicon_144.png",
         default_url: "https://www.youtube.com",
         allowed_origins: [
             "https://www.youtube.com",
