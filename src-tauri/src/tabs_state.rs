@@ -1,6 +1,6 @@
 use crate::media_sources::MediaSource;
 use crate::osx_utils::{enable_swipe_navigation, title_bar_height};
-use crate::{window_size, BackendState, EnhancedManager};
+use crate::{BackendState, EnhancedManager};
 use anyhow::anyhow;
 use log::error;
 use serde::{Deserialize, Serialize};
@@ -8,10 +8,11 @@ use std::collections::HashMap;
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::{
-    Listener, LogicalPosition, LogicalSize, Manager, Runtime, Webview, WebviewBuilder, WebviewUrl,
+    LogicalPosition, LogicalSize, Manager, Runtime, Webview, WebviewBuilder, WebviewUrl,
 };
 use tokio::time::sleep;
 use url::Url;
+use crate::utils::EnhancedWindow;
 
 pub const TAB_BAR_HEIGHT: f64 = 56.0;
 pub const MEDIA_SOURCE_BAR_WIDTH: f64 = 76.;
@@ -171,12 +172,11 @@ impl TabsState {
         M: Manager<R>,
         R: Runtime,
     {
-        // TODO, can I do this automatically? it kind of seems like it
-        match window_size(app) {
+        match app.main_window().available_size() {
             Ok(window_size) => {
                 let title_height = title_bar_height(&app.main_window());
                 for tab in self.tabs.values() {
-                    tab.relayout(window_size, title_height, app)?;
+                    tab.relayout_advanced(window_size, title_height, app)?;
                 }
             }
             Err(e) => {
@@ -185,14 +185,6 @@ impl TabsState {
         }
 
         Ok(())
-    }
-
-    pub fn get_ordered_tabs(&self) -> Vec<TabState> {
-        self.tab_order
-            .iter()
-            .filter_map(|label| self.tabs.get(label))
-            .cloned()
-            .collect()
     }
 
     pub fn state(&self) -> BackendState {
@@ -227,6 +219,7 @@ impl TabState {
 
         webview.show()?;
         self.status = TabStatus::Active;
+        self.relayout(app)?;
 
         Ok(())
     }
@@ -284,8 +277,8 @@ impl TabState {
         let web_view = window.add_child(
             WebviewBuilder::new(&self.key, WebviewUrl::External(self.url.clone()))
                 .initialization_script(&init_script),
-            self.position(title_bar_height(&window)),
-            self.size(window_size(app)?),
+            self.position(window.title_bar_height()),
+            self.size(window.available_size()?),
         )?;
 
         enable_swipe_navigation(&web_view);
@@ -294,6 +287,19 @@ impl TabState {
     }
 
     fn relayout<M, R>(
+        &self,
+        app: &M,
+    ) -> tauri::Result<()>
+    where
+        M: Manager<R>,
+        R: Runtime,
+    {
+        let window = app.main_window();
+        self.relayout_advanced(window.available_size()?, window.title_bar_height(), app)?;
+        Ok(())
+    }
+
+    fn relayout_advanced<M, R>(
         &self,
         window_size: LogicalSize<f64>,
         title_bar_height: f64,
@@ -323,24 +329,19 @@ impl TabState {
     fn size(
         &self,
         LogicalSize {
-            width: windowWidth,
-            height: windowHeight,
+            width: window_width,
+            height: window_height,
         }: LogicalSize<f64>,
     ) -> LogicalSize<f64> {
-        #[cfg(debug_assertions)]
-        const DEV_TOOLS_OFFSET: f64 = 400.;
-        #[cfg(not(debug_assertions))]
-        const DEV_TOOLS_OFFSET: f64 = 0.;
-
         if self.source.multi_instance() {
             LogicalSize::new(
-                windowWidth - MEDIA_SOURCE_BAR_WIDTH,
-                windowHeight - TAB_BAR_HEIGHT - DEV_TOOLS_OFFSET,
+                window_width - MEDIA_SOURCE_BAR_WIDTH,
+                window_height - TAB_BAR_HEIGHT,
             )
         } else {
             LogicalSize::new(
-                windowWidth - MEDIA_SOURCE_BAR_WIDTH,
-                windowHeight - DEV_TOOLS_OFFSET,
+                window_width - MEDIA_SOURCE_BAR_WIDTH,
+                window_height,
             )
         }
     }

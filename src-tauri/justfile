@@ -24,6 +24,9 @@ release:
 test:
     cargo test
 
+sign-debug:
+    codesign -s - --entitlements Entitlements.plist -f target/debug/medyia
+
 pre-commit: fix fmt lint test release
 
 clean:

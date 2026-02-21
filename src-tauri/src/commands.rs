@@ -1,12 +1,12 @@
-use tauri::{AppHandle, Manager};
+use tauri::AppHandle;
 
-use crate::media_sources::{MediaSource, MediaDefinition};
+use crate::media_sources::{MediaDefinition, MediaSource};
 use crate::tabs_state::{TabKey, TabsState};
 use crate::{webview_manager, BackendState, EnhancedManager};
 
 #[tauri::command]
 pub fn create_tab(app: AppHandle, source: MediaSource) -> tauri::Result<TabKey> {
-    Ok(webview_manager::create_tab( source, None, &app)?)
+    Ok(webview_manager::create_tab(source, None, &app)?)
 }
 
 #[tauri::command]

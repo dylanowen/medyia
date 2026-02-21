@@ -2,12 +2,13 @@ mod commands;
 mod media_bridge;
 mod media_sources;
 mod memory;
+mod osx_utils;
 mod playback;
 mod run;
 mod session;
 mod tabs_state;
 mod webview_manager;
-mod osx_utils;
+mod utils;
 
 use serde::Serialize;
 use std::sync::Mutex;
@@ -84,38 +85,3 @@ where
         Ok(result)
     }
 }
-
-// impl<R: Runtime> EnhancedApp<R> for AppHandle<R> {
-//     fn main_window(&self) -> Window<R> {
-//         self.get_window(MAIN_WINDOW).unwrap()
-//     }
-//
-//     fn main_webview(&self) -> Webview<R> {
-//         self.get_webview(MAIN_WEBVIEW).unwrap()
-//     }
-//
-//     fn tabs_state<F, V>(&self, f: F) -> V
-//     where
-//         F: FnOnce(&mut TabsState) -> V
-//     {
-//         let mutex = self.state::<Mutex<TabsState>>();
-//         let mut state = mutex.lock().unwrap();
-//         f(&mut *state)
-//     }
-// }
-
-pub fn window_size<M, R>(app: &M) -> tauri::Result<LogicalSize<f64>>
-where
-    M: Manager<R>,
-    R: Runtime,
-{
-    let window = app.main_window();
-    let size = window.inner_size()?;
-    let scale = window.scale_factor()?;
-
-    let width = size.width as f64 / scale;
-    let height = size.height as f64 / scale;
-
-    Ok(LogicalSize::new(width, height))
-}
-

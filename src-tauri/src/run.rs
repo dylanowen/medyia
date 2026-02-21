@@ -1,14 +1,20 @@
 use crate::tabs_state::TabsState;
 use crate::{
-    commands, media_bridge, memory, playback, session, webview_manager, window_size, MAIN_WEBVIEW,
-    MAIN_WINDOW,
+    EnhancedManager, MAIN_WEBVIEW, MAIN_WINDOW, commands, media_bridge, memory, playback, session,
+    webview_manager,
 };
 use log::error;
 use std::sync::Mutex;
+use std::time::Duration;
 use tauri::menu::{MenuBuilder, MenuItem, SubmenuBuilder};
 use tauri::{
     Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent,
 };
+use tokio::time::sleep;
+use crate::utils::EnhancedWindow;
+
+const CLOSE_TAB_KEY: &str = "CLOSE_TAB";
+const TOGGLE_DEVTOOLS_KEY: &str = "TOGGLE_DEVTOOLS";
 
 #[cfg_attr(mobile, mobile_entry_point)]
 pub fn run() {
@@ -28,13 +34,23 @@ pub fn run() {
             commands::get_backend_state,
         ])
         .setup(|app| {
-            // Build application menu with Cmd+W → Close Tab
-            let close_tab = MenuItem::with_id(app, "close_tab", "Close Tab", true, Some("cmd+w"))?;
-            let file_menu = SubmenuBuilder::new(app, "File")
-                .item(&close_tab)
-                .separator()
-                .close_window()
-                .build()?;
+            let file_menu = SubmenuBuilder::new(app, "File").item(&MenuItem::with_id(
+                app,
+                CLOSE_TAB_KEY,
+                "Close Tab",
+                true,
+                Some("cmd+w"),
+            )?);
+            #[cfg(debug_assertions)]
+            let file_menu = file_menu.separator().item(&MenuItem::with_id(
+                app,
+                TOGGLE_DEVTOOLS_KEY,
+                "Open DevTools",
+                true,
+                Some("cmd+option+i"),
+            )?);
+            let file_menu = file_menu.separator().close_window().build()?;
+
             let edit_menu = SubmenuBuilder::new(app, "Edit")
                 .undo()
                 .redo()
@@ -57,37 +73,12 @@ pub fn run() {
                 .min_inner_size(800.0, 600.0)
                 .build()?;
 
-            let main_view = window.add_child(
+            let _main_view = window.add_child(
                 WebviewBuilder::new(MAIN_WEBVIEW, WebviewUrl::App("index.html".into()))
                     .auto_resize(),
                 LogicalPosition::new(0., 0.),
-                window_size(app)?,
+                app.main_window().size()?,
             )?;
-
-            // Open devtools for all webviews in debug builds
-            // #[cfg(debug_assertions)]
-            // main_view.open_devtools();
-
-            // let window = WebviewWindowBuilder::new(
-            //     app,
-            //     MAIN_WINDOW,
-            //     WebviewUrl::App("index.html".into()),
-            // )
-            //     .title("Medyia")
-            //     .inner_size(1400.0, 1000.0)
-            //     .min_inner_size(800.0, 600.0)
-            //     .build()?;
-            //
-            // // let main_view = window.add_child(
-            // //     WebviewBuilder::new(MAIN_WEBVIEW, WebviewUrl::App("index.html".into()))
-            // //         .auto_resize(),
-            // //     LogicalPosition::new(0.0, 0.0),
-            // //     window_size(app)?,
-            // // )?;
-            //
-            // // Open devtools for all webviews in debug builds
-            // #[cfg(debug_assertions)]
-            // window.open_devtools();
 
             let handle = app.handle().clone();
             playback::setup_playback_listener(&handle);
@@ -96,8 +87,8 @@ pub fn run() {
             session::restore_session(&handle);
             Ok(())
         })
-        .on_menu_event(|app, event| {
-            if event.id() == "close_tab" {
+        .on_menu_event(|app, event| match event.id().as_ref() {
+            CLOSE_TAB_KEY => {
                 let state_mutex = app.state::<Mutex<TabsState>>();
                 let active = {
                     let state = state_mutex.lock().unwrap();
@@ -107,6 +98,26 @@ pub fn run() {
                     let _ = webview_manager::close_tab(app, &label);
                 }
             }
+            TOGGLE_DEVTOOLS_KEY => {
+                let main_webview = app.main_webview();
+                if main_webview.is_devtools_open() {
+                    main_webview.close_devtools();
+                } else {
+                    main_webview.open_devtools();
+                }
+
+                // TODO this isn't perfect
+                tauri::async_runtime::spawn({
+                    let app = app.clone();
+                    async move {
+                        sleep(Duration::from_millis(100)).await;
+                        if let Err(e) = webview_manager::relayout(&app) {
+                            error!("{e:?}")
+                        }
+                    }
+                });
+            }
+            _ => (),
         })
         .on_window_event(|window, event| match event {
             WindowEvent::Resized(_) | WindowEvent::ScaleFactorChanged { .. } => {

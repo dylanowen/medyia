@@ -1,9 +1,12 @@
 mod src-tauri
 
 dev:
-    npm run tauri dev
+    cargo tauri dev
 
 build:
-    npm run tauri build
+    cargo tauri build
+
+build-debug:
+    cargo tauri build --config src-tauri/tauri.debug.conf.json
 
 clean: src-tauri::clean
