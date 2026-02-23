@@ -9,6 +9,7 @@ mod session;
 mod tabs_state;
 mod webview_manager;
 mod utils;
+mod state;
 
 use serde::Serialize;
 use std::sync::Mutex;

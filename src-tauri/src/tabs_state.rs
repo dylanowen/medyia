@@ -26,6 +26,7 @@ pub enum TabStatus {
 }
 
 pub type TabKey = String;
+pub type TabKeyRef<'a> = &'a str;
 
 #[derive(Serialize, Clone, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -299,7 +300,7 @@ impl TabState {
         Ok(())
     }
 
-    fn relayout_advanced<M, R>(
+    pub fn relayout_advanced<M, R>(
         &self,
         window_size: LogicalSize<f64>,
         title_bar_height: f64,

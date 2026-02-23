@@ -25,6 +25,8 @@ struct SavedSession {
 
 pub fn save_session(app: &AppHandle) {
     let state_mutex = app.state::<Mutex<TabsState>>();
+    
+
     let state = state_mutex.lock().unwrap();
 
     let saved = SavedSession {
@@ -52,6 +54,9 @@ pub fn save_session(app: &AppHandle) {
 }
 
 pub fn restore_session(app: &AppHandle) {
+
+    println!("{:?}", STORE_PATH);
+
     let store = match app.store(STORE_PATH) {
         Ok(s) => s,
         Err(_) => return,
@@ -64,6 +69,8 @@ pub fn restore_session(app: &AppHandle) {
         },
         None => return,
     };
+
+    println!("{:?}", session);
 
     if session.tabs.is_empty() {
         return;

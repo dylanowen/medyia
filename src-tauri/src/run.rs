@@ -11,6 +11,7 @@ use tauri::{
     Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent,
 };
 use tokio::time::sleep;
+use crate::state::AppState;
 use crate::utils::EnhancedWindow;
 
 const CLOSE_TAB_KEY: &str = "CLOSE_TAB";
@@ -25,6 +26,7 @@ pub fn run() {
                 .level(log::LevelFilter::Debug)
                 .build(),
         )
+        .manage(AppState::new())
         .manage(TabsState::new())
         .invoke_handler(tauri::generate_handler![
             commands::create_tab,
@@ -80,7 +82,7 @@ pub fn run() {
                 app.main_window().size()?,
             )?;
 
-            let handle = app.handle().clone();
+            let handle = app.handle();
             playback::setup_playback_listener(&handle);
             media_bridge::setup_media_keys(&handle);
             memory::start_memory_monitor(handle.clone());
