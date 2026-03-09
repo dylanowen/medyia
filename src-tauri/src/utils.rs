@@ -21,7 +21,7 @@ impl<R: Runtime> EnhancedWindow<R> for Window<R> {
         if let Some(webview) = self.get_webview(MAIN_WEBVIEW)
             && webview.is_devtools_open()
         {
-            window_size.height = window_size.height - DEVTOOLS_HEIGHT;
+            window_size.height -= DEVTOOLS_HEIGHT;
         }
 
         Ok(window_size)

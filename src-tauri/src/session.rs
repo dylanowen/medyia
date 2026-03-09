@@ -1,87 +1,32 @@
-use crate::media_sources::MediaSource;
-use crate::tabs_state::TabsState;
-use crate::webview_manager;
-use serde::{Deserialize, Serialize};
-use std::sync::Mutex;
-use tauri::{AppHandle, Manager};
+use crate::state::{
+    AppState, EnhancerAppStateManager, EnhancerAppStateManagerEmitter,
+};
+use log::info;
+use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
-use url::Url;
 
 const STORE_PATH: &str = "medyia-session.json";
 const SESSION_KEY: &str = "session";
 
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct SavedTab {
-    label: String,
-    source_id: MediaSource,
-    url: Url,
-}
-
-#[derive(Debug, Clone, Serialize, Deserialize)]
-struct SavedSession {
-    tabs: Vec<SavedTab>,
-    active_tab: Option<String>,
-}
-
-pub fn save_session(app: &AppHandle) {
-    let state_mutex = app.state::<Mutex<TabsState>>();
-    
-
-    let state = state_mutex.lock().unwrap();
-
-    let saved = SavedSession {
-        tabs: state
-            .tab_order
-            .iter()
-            .filter_map(|label| {
-                state.tabs.get(label).map(|tab| SavedTab {
-                    label: tab.key.clone(),
-                    source_id: tab.source,
-                    url: tab.url.clone(),
-                })
-            })
-            .collect(),
-        active_tab: state.active_tab_key.clone(),
-    };
+pub fn save_session(app: &AppHandle) -> anyhow::Result<()> {
+    let session = app.app_state(AppState::read_session);
 
     if let Ok(store) = app.store(STORE_PATH) {
-        store.set(
-            SESSION_KEY,
-            serde_json::to_value(&saved).unwrap_or_default(),
-        );
-        let _ = store.save();
+        store.set(SESSION_KEY, serde_json::to_value(&session)?);
+        store.save()?;
+        info!("Session saved to {STORE_PATH} @ {SESSION_KEY}");
     }
+
+    Ok(())
 }
 
-pub fn restore_session(app: &AppHandle) {
+pub fn restore_session(app: &AppHandle) -> anyhow::Result<()> {
+    let store = app.store(STORE_PATH)?;
 
-    println!("{:?}", STORE_PATH);
-
-    let store = match app.store(STORE_PATH) {
-        Ok(s) => s,
-        Err(_) => return,
-    };
-
-    let session: SavedSession = match store.get(SESSION_KEY) {
-        Some(val) => match serde_json::from_value(val.clone()) {
-            Ok(s) => s,
-            Err(_) => return,
-        },
-        None => return,
-    };
-
-    println!("{:?}", session);
-
-    if session.tabs.is_empty() {
-        return;
+    if let Some(session) = store.get(SESSION_KEY) {
+        let session = serde_json::from_value(session)?;
+        app.app_state_mut(|state| state.restore_session(session, app))?
     }
 
-    for tab in &session.tabs {
-        let _ = webview_manager::create_tab(tab.source_id, Some(tab.url.to_string()), app);
-    }
-
-    // Switch to the previously active tab
-    if let Some(ref active) = session.active_tab {
-        let _ = webview_manager::switch_to_tab(app, active);
-    }
+    Ok(())
 }

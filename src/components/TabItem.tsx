@@ -4,17 +4,16 @@ import {MediaSourcesContext} from "../utils.tsx";
 
 interface TabItemProps {
     tab: TabState;
-    isActive: boolean;
     onSelect: () => void;
     onClose: () => void;
 }
 
-export function TabItem({tab, isActive, onSelect, onClose}: TabItemProps) {
+export function TabItem({tab, onSelect, onClose}: TabItemProps) {
     const iconUrl = useContext(MediaSourcesContext).get(tab.source)!.iconUrl;
 
     return (
         <button
-            className={`tab-item ${isActive ? "tab-item--active" : ""} ${tab.isPlaying ? "tab-item--playing" : ""}`}
+            className={`tab-item ${tab.isActive ? "tab-item--active" : ""} ${tab.isPlaying ? "tab-item--playing" : ""}`}
             onClick={onSelect}
             title={tab.displayName}
         >

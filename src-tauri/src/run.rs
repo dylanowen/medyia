@@ -1,18 +1,13 @@
-use crate::tabs_state::TabsState;
+use crate::state::{AppState, EnhancerAppStateManagerEmitter};
+use crate::utils::EnhancedWindow;
 use crate::{
-    EnhancedManager, MAIN_WEBVIEW, MAIN_WINDOW, commands, media_bridge, memory, playback, session,
-    webview_manager,
+    commands, memory, playback, session, webview_manager, EnhancedManager,
+    EnhancedResult, MAIN_WEBVIEW, MAIN_WINDOW,
 };
-use log::error;
-use std::sync::Mutex;
 use std::time::Duration;
 use tauri::menu::{MenuBuilder, MenuItem, SubmenuBuilder};
-use tauri::{
-    Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent,
-};
+use tauri::{Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent, Wry};
 use tokio::time::sleep;
-use crate::state::AppState;
-use crate::utils::EnhancedWindow;
 
 const CLOSE_TAB_KEY: &str = "CLOSE_TAB";
 const TOGGLE_DEVTOOLS_KEY: &str = "TOGGLE_DEVTOOLS";
@@ -26,14 +21,14 @@ pub fn run() {
                 .level(log::LevelFilter::Debug)
                 .build(),
         )
-        .manage(AppState::new())
-        .manage(TabsState::new())
+        .manage(AppState::<Wry>::new())
         .invoke_handler(tauri::generate_handler![
             commands::create_tab,
+            commands::switch_source,
             commands::switch_tab,
             commands::close_tab,
             commands::get_sources,
-            commands::get_backend_state,
+            commands::emit_backend_state,
         ])
         .setup(|app| {
             let file_menu = SubmenuBuilder::new(app, "File").item(&MenuItem::with_id(
@@ -83,22 +78,16 @@ pub fn run() {
             )?;
 
             let handle = app.handle();
-            playback::setup_playback_listener(&handle);
-            media_bridge::setup_media_keys(&handle);
+            playback::setup_playback_listener(handle);
+            // media_bridge::setup_media_keys(&handle).log_error();
             memory::start_memory_monitor(handle.clone());
-            session::restore_session(&handle);
+            session::restore_session(handle).log_error();
             Ok(())
         })
         .on_menu_event(|app, event| match event.id().as_ref() {
             CLOSE_TAB_KEY => {
-                let state_mutex = app.state::<Mutex<TabsState>>();
-                let active = {
-                    let state = state_mutex.lock().unwrap();
-                    state.active_tab_key.clone()
-                };
-                if let Some(label) = active {
-                    let _ = webview_manager::close_tab(app, &label);
-                }
+                app.app_state_mut(|state| state.close_active_tab(app))
+                    .log_error();
             }
             TOGGLE_DEVTOOLS_KEY => {
                 let main_webview = app.main_webview();
@@ -113,9 +102,7 @@ pub fn run() {
                     let app = app.clone();
                     async move {
                         sleep(Duration::from_millis(100)).await;
-                        if let Err(e) = webview_manager::relayout(&app) {
-                            error!("{e:?}")
-                        }
+                        webview_manager::relayout(&app).log_error();
                     }
                 });
             }
@@ -123,12 +110,10 @@ pub fn run() {
         })
         .on_window_event(|window, event| match event {
             WindowEvent::Resized(_) | WindowEvent::ScaleFactorChanged { .. } => {
-                if let Err(e) = webview_manager::relayout(window.app_handle()) {
-                    error!("{e:?}")
-                }
+                webview_manager::relayout(window.app_handle()).log_error();
             }
             WindowEvent::CloseRequested { .. } => {
-                session::save_session(window.app_handle());
+                session::save_session(window.app_handle()).log_error();
             }
             _ => {}
         })

@@ -1,49 +1,35 @@
 use crate::media_sources::MediaSource;
-use crate::tabs_state::{TabKey, TabState, TabStatus};
-use crate::EnhancedManagerEmitter;
+use crate::state::{EnhancerAppStateManagerEmitter, TabKey};
 use log::debug;
-use std::time::Instant;
-use tauri::{
-    AppHandle, Url,
-};
+use tauri::AppHandle;
 
 pub fn create_tab(
     source: MediaSource,
     url_override: Option<String>,
     app: &AppHandle,
 ) -> anyhow::Result<TabKey> {
-    let tab_key = source.next_tab_key();
-    let url_str = url_override.unwrap_or_else(|| source.default_url().to_string());
+    app.app_state_mut(|state| {
+        let tab_key = state.create_tab(source, url_override)?;
+        state.show_tab(&tab_key, app)?;
 
-    let tab = TabState {
-        key: tab_key.clone(),
-        source,
-        url: Url::parse(&url_str)?,
-        status: TabStatus::Active,
-        is_playing: false,
-        last_interaction: Instant::now(),
-        display_name: source.name().to_string(),
-    };
+        debug!("Tab Created: {tab_key:?}");
 
-    app.tabs_state_mut(|tabs_state| {
-        tabs_state.create_tab(tab, app)?;
-        tabs_state.show_tab(&tab_key, app)?;
-        Ok(())
-    })?;
+        Ok(tab_key)
+    })
+}
 
-    debug!("Tab Created: {tab_key:?}");
-
-    Ok(tab_key)
+pub fn switch_to_source(app: &AppHandle, source: MediaSource) -> anyhow::Result<()> {
+    app.app_state_mut(|state| state.show_source(source, app)).map(|_| ())
 }
 
 pub fn switch_to_tab(app: &AppHandle, key: &str) -> anyhow::Result<()> {
-    app.tabs_state_mut(|tabs_state| tabs_state.show_tab(key, app))
+    app.app_state_mut(|state| state.show_tab(key, app))
 }
 
 pub fn close_tab(app: &AppHandle, key: &str) -> anyhow::Result<()> {
-    app.tabs_state_mut(|tabs_state| tabs_state.close_tab(key, app))
+    app.app_state_mut(|state| state.close_tab(key, app))
 }
 
 pub fn relayout(app: &AppHandle) -> anyhow::Result<()> {
-    app.tabs_state_mut(|tabs_state| tabs_state.relayout(app))
+    app.app_state_mut(|state| state.relayout(app))
 }

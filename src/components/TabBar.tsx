@@ -6,7 +6,6 @@ import {MediaSourcesContext} from "../utils.tsx";
 interface TabBarProps {
     source: MediaSource,
     tabs: TabState[],
-    activeTab: TabKey;
     onCreateTab: () => void;
     onSwitchTab: (key: TabKey) => void;
     onCloseTab: (key: TabKey) => void;
@@ -15,7 +14,6 @@ interface TabBarProps {
 export function TabBar({
                            source,
                            tabs,
-                           activeTab,
                            onCreateTab,
                            onSwitchTab,
                            onCloseTab,
@@ -29,7 +27,6 @@ export function TabBar({
                     <TabItem
                         key={tab.key}
                         tab={tab}
-                        isActive={tab.key === activeTab}
                         onSelect={() => onSwitchTab(tab.key)}
                         onClose={() => onCloseTab(tab.key)}
                     />

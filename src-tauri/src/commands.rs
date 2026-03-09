@@ -1,12 +1,18 @@
 use tauri::AppHandle;
 
 use crate::media_sources::{MediaDefinition, MediaSource};
-use crate::tabs_state::{TabKey, TabsState};
-use crate::{webview_manager, BackendState, EnhancedManager};
+use crate::state::{EnhancerAppStateManagerEmitter, TabKey};
+use crate::webview_manager;
 
 #[tauri::command]
 pub fn create_tab(app: AppHandle, source: MediaSource) -> tauri::Result<TabKey> {
     Ok(webview_manager::create_tab(source, None, &app)?)
+}
+
+#[tauri::command]
+pub fn switch_source(app: AppHandle, source: MediaSource) -> tauri::Result<()> {
+    webview_manager::switch_to_source(&app, source)?;
+    Ok(())
 }
 
 #[tauri::command]
@@ -41,6 +47,7 @@ pub fn get_sources() -> Vec<MediaDefinition> {
 // }
 
 #[tauri::command]
-pub fn get_backend_state(app: AppHandle) -> BackendState {
-    app.tabs_state(TabsState::state)
+pub fn emit_backend_state(app: AppHandle) -> tauri::Result<()> {
+    app.emit_app_state()?;
+    Ok(())
 }

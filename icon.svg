@@ -25,15 +25,50 @@
      inkscape:pagecheckerboard="0"
      inkscape:deskcolor="#d1d1d1"
      inkscape:export-bgcolor="#ffffff00"
-     inkscape:zoom="9.1707195"
-     inkscape:cx="51.086504"
-     inkscape:cy="63.135722"
-     inkscape:window-width="1906"
+     inkscape:zoom="9.5923452"
+     inkscape:cx="142.97859"
+     inkscape:cy="47.537906"
+     inkscape:window-width="2624"
      inkscape:window-height="1555"
      inkscape:window-x="0"
      inkscape:window-y="50"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg4" />
+     inkscape:current-layer="svg4"
+     showgrid="true">
+    <inkscape:grid
+       id="grid1"
+       units="px"
+       originx="0"
+       originy="0"
+       spacingx="1"
+       spacingy="1"
+       empcolor="#0099e5"
+       empopacity="0.30196078"
+       color="#0099e5"
+       opacity="0.14901961"
+       empspacing="5"
+       enabled="true"
+       visible="true" />
+    <inkscape:page
+       x="0"
+       y="0"
+       width="100"
+       height="100"
+       id="page1"
+       margin="0"
+       bleed="0" />
+    <inkscape:page
+       x="120.16923"
+       y="0.20506693"
+       width="100"
+       height="100"
+       id="page2"
+       margin="0 0 0 0"
+       bleed="0"
+       inkscape:export-filename="icon.png"
+       inkscape:export-xdpi="491.51999"
+       inkscape:export-ydpi="491.51999" />
+  </sodipodi:namedview>
   <defs
      id="defs2">
     <linearGradient
@@ -115,6 +150,97 @@
        x2="114.59004"
        y2="194.31599"
        gradientUnits="userSpaceOnUse" />
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask11-3">
+      <g
+         id="g13-8">
+        <line
+           x1="41.970638"
+           y1="198.5442"
+           x2="41.970638"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="line11-0" />
+        <path
+           d="m 41.970637,198.5442 c 0,0 41.5,13.274 41.5,26 0,12.726 -41.5,26 -41.5,26"
+           fill="none"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="path11-2" />
+        <line
+           x1="96.970634"
+           y1="198.5442"
+           x2="96.970634"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="fill:#da2e9f;stroke:#ffffff;paint-order:fill"
+           id="line12-4" />
+        <line
+           x1="111.97063"
+           y1="198.5442"
+           x2="111.97063"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="line13-8" />
+      </g>
+    </mask>
+    <mask
+       maskUnits="userSpaceOnUse"
+       id="mask11-2">
+      <g
+         id="g13-3">
+        <line
+           x1="41.970638"
+           y1="198.5442"
+           x2="41.970638"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="line11-6" />
+        <path
+           d="m 41.970637,198.5442 c 0,0 41.5,13.274 41.5,26 0,12.726 -41.5,26 -41.5,26"
+           fill="none"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="path11-5" />
+        <line
+           x1="96.970634"
+           y1="198.5442"
+           x2="96.970634"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="fill:#da2e9f;stroke:#ffffff;paint-order:fill"
+           id="line12-5" />
+        <line
+           x1="111.97063"
+           y1="198.5442"
+           x2="111.97063"
+           y2="250.5442"
+           stroke-width="9"
+           stroke-linecap="round"
+           style="stroke:#ffffff"
+           id="line13-81" />
+      </g>
+    </mask>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient13"
+       id="linearGradient5"
+       x1="120.64898"
+       y1="100.2576"
+       x2="222.03943"
+       y2="3.681776"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <rect
      width="100"
@@ -132,4 +258,22 @@
      y="173.69894"
      mask="url(#mask11)"
      transform="translate(-26.942952,-174.60703)" />
+  <rect
+     width="100"
+     height="100"
+     rx="18"
+     ry="18"
+     style="fill:url(#linearGradient5);fill-opacity:1;fill-rule:nonzero;paint-order:fill"
+     id="rect2-7"
+     x="120.16923"
+     y="0.20506693" />
+  <rect
+     style="fill:#ffffff;fill-opacity:1;stroke-width:0.650686"
+     id="rect8-1"
+     width="114.53143"
+     height="98.894295"
+     x="19.440758"
+     y="173.69894"
+     mask="url(#mask11-2)"
+     transform="matrix(0.82812051,0,0,0.82812051,106.42724,-135.78832)" />
 </svg>

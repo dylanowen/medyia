@@ -1,7 +1,7 @@
 import {MediaSourceBar} from "./MediaSourceBar.tsx";
 import {useCallback, useEffect, useState} from "react";
 import * as commands from "../commands.ts";
-import {BackendState, MediaSource, TabKey, TabState} from "../commands.ts";
+import {AppState, MediaSource, MediaState} from "../commands.ts";
 import {Landing} from "./Landing.tsx";
 import {useSources} from "../utils.tsx";
 import {TabBar} from "./TabBar.tsx";
@@ -12,51 +12,24 @@ import './MediaSource.css'
 export function MediaSourceController() {
     const sources = useSources();
 
-    const [currentSource, setCurrentSource] = useState<MediaSource | null>(null)
-    const [sourcesState, setSourcesState] = useState<Record<MediaSource, SourceState>>({});
-
-    const refreshTabs = useCallback(({activeTab, tabs}: BackendState) => {
-        const nextSourcesState: Record<MediaSource, SourceState> = {};
-        for (const tab of tabs) {
-            const sourceState: SourceState = nextSourcesState[tab.source] ?? {
-                id: tab.source,
-                tabs: [],
-                activeTab: sourcesState[tab.source]?.activeTab ?? tab.key
-            };
-
-            sourceState.tabs.push(tab);
-
-            if (tab.key == activeTab) {
-                sourceState.activeTab = tab.key;
-                setCurrentSource(tab.source);
-            }
-
-            nextSourcesState[tab.source] = sourceState;
-        }
-
-        setSourcesState(nextSourcesState);
-    }, [sourcesState]);
+    const [sourcesState, setSourcesState] = useState<Record<MediaSource, MediaState>>({});
 
     const changeSource = useCallback(async (source: MediaSource) => {
         const tabSourceState = sourcesState[source];
-        if (!tabSourceState) {
-            // create a tab for our new sources view
-            await commands.createTab(source);
-        } else {
-            // tell the backend our current tab
-            setCurrentSource(source);
-            await commands.switchTab(tabSourceState.activeTab);
-        }
+        console.log(`changing ${source}`, tabSourceState)
+        await commands.switchSource(source)
     }, [sources, sourcesState]);
 
 
     useEffect(() => {
         let unlistenFn: UnlistenFn | null = null;
         (async () => {
-            unlistenFn = await listen<BackendState>('BACKEND_STATE_EVENT', (event) => {
-                refreshTabs(event.payload)
+            unlistenFn = await listen<AppState>('BACKEND_STATE_EVENT', (event) => {
+                const {media} = event.payload;
+
+                setSourcesState(media);
             });
-            refreshTabs(await commands.getBackendState());
+            await commands.emitBackendState();
         })();
 
         //cleanup our listener
@@ -65,11 +38,17 @@ export function MediaSourceController() {
         };
     }, []);
 
-    const currentSourceState = (currentSource != null) ? sourcesState[currentSource] : null
+    const currentSourceState = Object.values(sourcesState).find((s) => {
+        if (s.type == 'multi') {
+            return s.tabs.some((t) => t.isActive)
+        } else {
+            return s.tab?.isActive;
+        }
+    }) ?? null;
 
     return (<div className="media-source-controller">
         <MediaSourceBar
-            currentSource={currentSource}
+            currentSource={currentSourceState?.source}
             changeSource={changeSource}
         />
         <div className="media-view">
@@ -81,14 +60,8 @@ export function MediaSourceController() {
     </div>);
 }
 
-interface SourceState {
-    id: MediaSource,
-    tabs: TabState[],
-    activeTab: TabKey,
-}
-
 interface MediaViewProps {
-    sourceState: SourceState | null,
+    sourceState: MediaState | null,
     changeSource: (source: MediaSource) => void
 }
 
@@ -96,16 +69,14 @@ function MediaView({
                        sourceState,
                        changeSource,
                    }: MediaViewProps) {
-    const sources = useSources();
-
-    if (sourceState != null) {
-        const {tabs, activeTab} = sourceState;
-        if (sources.get(sourceState.id)!.multiInstance) {
+    console.log(sourceState);
+    if (sourceState) {
+        console.log(sourceState)
+        if (sourceState.type == 'multi') {
             return <TabBar
-                source={sourceState.id}
-                tabs={tabs}
-                activeTab={activeTab}
-                onCreateTab={() => commands.createTab(sourceState.id)}
+                source={sourceState.source}
+                tabs={sourceState.tabs}
+                onCreateTab={() => commands.createTab(sourceState.source)}
                 onSwitchTab={commands.switchTab}
                 onCloseTab={commands.closeTab}
             />;

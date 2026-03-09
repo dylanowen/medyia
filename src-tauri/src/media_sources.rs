@@ -19,7 +19,6 @@ macro_rules! define_sources {
                 name: $name:expr,
                 icon_url: $icon_url:expr,
                 default_url: $default_url:expr,
-                allowed_origins: [$($origin:expr),* $(,)?],
                 multi_instance: $multi:expr,
                 init_script: $init_script:expr,
                 next_selector: $next_selector:expr,
@@ -59,12 +58,6 @@ macro_rules! define_sources {
             pub fn default_url(self) -> &'static str {
                 match self {
                     $(MediaSource::$variant => $default_url,)*
-                }
-            }
-
-            pub fn allowed_origins(self) -> &'static [&'static str] {
-                match self {
-                    $(MediaSource::$variant => &[$($origin,)*],)*
                 }
             }
 
@@ -125,11 +118,6 @@ define_sources! {
         name: "Apple Music",
         icon_url: "https://music.apple.com/assets/favicon/favicon-180.png",
         default_url: "https://music.apple.com",
-        allowed_origins: [
-            "https://music.apple.com",
-            "https://appleid.apple.com",
-            "https://idmsa.apple.com",
-        ],
         multi_instance: false,
         init_script: include_str!("../scripts/apple-music_metadata.js"),
         next_selector: "button[aria-label=\"Next\"], .web-chrome-playback-controls__next",
@@ -139,15 +127,6 @@ define_sources! {
         name: "YouTube",
         icon_url: "https://www.youtube.com/img/favicon_144.png",
         default_url: "https://www.youtube.com",
-        allowed_origins: [
-            "https://www.youtube.com",
-            "https://youtube.com",
-            "https://accounts.google.com",
-            "https://accounts.youtube.com",
-            "https://consent.youtube.com",
-            "https://consent.google.com",
-            "https://myaccount.google.com",
-        ],
         multi_instance: true,
         init_script: include_str!("../scripts/youtube_metadata.js"),
         next_selector: "button.ytp-next-button, a.ytp-next-button, .ytp-next-button",
@@ -157,12 +136,6 @@ define_sources! {
         name: "SoundCloud",
         icon_url: "https://a-v2.sndcdn.com/assets/images/sc-icons/favicon-2cadd14bdb.ico",
         default_url: "https://soundcloud.com",
-        allowed_origins: [
-            "https://soundcloud.com",
-            "https://secure.soundcloud.com",
-            "https://api-v2.soundcloud.com",
-            "https://accounts.google.com",
-        ],
         multi_instance: false,
         init_script: include_str!("../scripts/soundcloud_metadata.js"),
         next_selector: "button.skipControl__next, button[aria-label=\"Next\"]",

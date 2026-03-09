@@ -1,5 +1,11 @@
 mod src-tauri
 
+fix: src-tauri::fix
+
+fmt: src-tauri::fmt
+
+lint: src-tauri::lint
+
 dev:
     cargo tauri dev
 
