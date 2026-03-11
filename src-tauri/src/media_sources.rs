@@ -141,4 +141,13 @@ define_sources! {
         next_selector: "button.skipControl__next, button[aria-label=\"Next\"]",
         previous_selector: "button.skipControl__previous, button[aria-label=\"Previous\"]",
     },
+    BrainFm {
+        name: "Brain.fm",
+        icon_url: "https://my.brain.fm/favicon.png",
+        default_url: "https://my.brain.fm",
+        multi_instance: false,
+        init_script: include_str!("../scripts/brain-fm_metadata.js"),
+        next_selector: "button[data-testid=\"skipButton\"]",
+        previous_selector: "button[data-testid=\"previousButton\"]",
+    },
 }
