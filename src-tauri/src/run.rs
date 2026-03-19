@@ -89,6 +89,7 @@ pub fn run() {
                 app.app_state_mut(|state| state.close_active_tab(app))
                     .log_error();
             }
+            #[cfg(debug_assertions)]
             TOGGLE_DEVTOOLS_KEY => {
                 let main_webview = app.main_webview();
                 if main_webview.is_devtools_open() {

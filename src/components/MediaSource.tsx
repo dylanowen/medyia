@@ -48,7 +48,7 @@ export function MediaSourceController() {
 
     return (<div className="media-source-controller">
         <MediaSourceBar
-            currentSource={currentSourceState?.source}
+            currentSource={currentSourceState?.source ?? null}
             changeSource={changeSource}
         />
         <div className="media-view">

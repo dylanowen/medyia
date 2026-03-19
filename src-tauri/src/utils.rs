@@ -2,7 +2,9 @@ use crate::osx_utils::title_bar_height;
 use crate::MAIN_WEBVIEW;
 use tauri::{LogicalSize, Manager, Runtime, Window};
 
+#[cfg(debug_assertions)]
 const DEVTOOLS_HEIGHT: f64 = 500.;
+
 pub trait EnhancedWindow<R: Runtime> {
     fn size(&self) -> tauri::Result<LogicalSize<f64>>;
     fn available_size(&self) -> tauri::Result<LogicalSize<f64>>;
@@ -18,6 +20,8 @@ impl<R: Runtime> EnhancedWindow<R> for Window<R> {
 
     fn available_size(&self) -> tauri::Result<LogicalSize<f64>> {
         let mut window_size = self.size()?;
+
+        #[cfg(debug_assertions)]
         if let Some(webview) = self.get_webview(MAIN_WEBVIEW)
             && webview.is_devtools_open()
         {
