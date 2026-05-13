@@ -1,12 +1,14 @@
 use crate::state::{AppState, EnhancerAppStateManagerEmitter};
 use crate::utils::EnhancedWindow;
 use crate::{
-    commands, memory, playback, session, webview_manager, EnhancedManager,
-    EnhancedResult, MAIN_WEBVIEW, MAIN_WINDOW,
+    EnhancedManager, EnhancedResult, MAIN_WEBVIEW, MAIN_WINDOW, commands, memory, playback,
+    session, webview_manager,
 };
 use std::time::Duration;
 use tauri::menu::{MenuBuilder, MenuItem, SubmenuBuilder};
-use tauri::{Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent, Wry};
+use tauri::{
+    Builder, LogicalPosition, Manager, WebviewBuilder, WebviewUrl, WindowBuilder, WindowEvent, Wry,
+};
 use tokio::time::sleep;
 
 const CLOSE_TAB_KEY: &str = "CLOSE_TAB";
@@ -31,6 +33,14 @@ pub fn run() {
             commands::emit_backend_state,
         ])
         .setup(|app| {
+            let app_menu = SubmenuBuilder::new(app, "App")
+                .hide()
+                .hide_others()
+                .show_all()
+                .separator()
+                .quit()
+                .build()?;
+
             let file_menu = SubmenuBuilder::new(app, "File").item(&MenuItem::with_id(
                 app,
                 CLOSE_TAB_KEY,
@@ -57,9 +67,18 @@ pub fn run() {
                 .paste()
                 .select_all()
                 .build()?;
+
+            let window_menu = SubmenuBuilder::new(app, "Window")
+                .minimize()
+                .maximize()
+                .fullscreen()
+                .build()?;
+
             let menu = MenuBuilder::new(app)
+                .item(&app_menu)
                 .item(&file_menu)
                 .item(&edit_menu)
+                .item(&window_menu)
                 .build()?;
             app.set_menu(menu)?;
 

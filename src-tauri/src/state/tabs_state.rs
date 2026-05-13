@@ -98,7 +98,7 @@ impl<R: Runtime> TabState<R> {
         }
     }
 
-        #[deprecated]
+    #[deprecated]
     pub fn previous(&self) {
         if self.maybe_eval(format!(
             "document.querySelector('{}')?.click();",

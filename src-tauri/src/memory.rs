@@ -1,8 +1,8 @@
+use crate::EnhancedResult;
 use crate::state::EnhancerAppStateManagerEmitter;
 use std::time::Duration;
 use tauri::AppHandle;
 use tokio::time;
-use crate::EnhancedResult;
 
 const CHECK_INTERVAL: Duration = Duration::from_secs(30);
 const UNLOAD_TIMEOUT: Duration = Duration::from_mins(15);
@@ -24,5 +24,6 @@ fn check_idle_tabs(app: &AppHandle) {
         }
 
         Ok(())
-    }).log_error();
+    })
+    .log_error();
 }

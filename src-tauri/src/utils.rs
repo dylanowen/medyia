@@ -1,5 +1,5 @@
-use crate::osx_utils::title_bar_height;
 use crate::MAIN_WEBVIEW;
+use crate::osx_utils::title_bar_height;
 use tauri::{LogicalSize, Manager, Runtime, Window};
 
 #[cfg(debug_assertions)]
@@ -20,6 +20,7 @@ impl<R: Runtime> EnhancedWindow<R> for Window<R> {
 
     fn available_size(&self) -> tauri::Result<LogicalSize<f64>> {
         let mut window_size = self.size()?;
+        window_size.height -= self.title_bar_height();
 
         #[cfg(debug_assertions)]
         if let Some(webview) = self.get_webview(MAIN_WEBVIEW)

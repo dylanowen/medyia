@@ -2,7 +2,6 @@ use log::{debug, error, info, warn};
 use serde::Deserialize;
 use tauri::{AppHandle, Emitter, Listener};
 
-
 #[derive(Debug, Deserialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct PlaybackEvent {

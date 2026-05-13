@@ -1,3 +1,4 @@
+use crate::EnhancedManager;
 use crate::media_sources::MediaSource;
 use crate::osx_utils::title_bar_height;
 use crate::state::media_state::MediaStateInternal;
@@ -5,7 +6,6 @@ use crate::state::media_state::{MediaState, TabCloseState};
 use crate::state::tabs_state::TabState;
 use crate::state::{TabKey, TabKeyRef};
 use crate::utils::EnhancedWindow;
-use crate::EnhancedManager;
 use log::error;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;

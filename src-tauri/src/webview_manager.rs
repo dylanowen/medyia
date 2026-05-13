@@ -19,7 +19,8 @@ pub fn create_tab(
 }
 
 pub fn switch_to_source(app: &AppHandle, source: MediaSource) -> anyhow::Result<()> {
-    app.app_state_mut(|state| state.show_source(source, app)).map(|_| ())
+    app.app_state_mut(|state| state.show_source(source, app))
+        .map(|_| ())
 }
 
 pub fn switch_to_tab(app: &AppHandle, key: &str) -> anyhow::Result<()> {

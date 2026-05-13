@@ -1,6 +1,4 @@
-use crate::state::{
-    AppState, EnhancerAppStateManager, EnhancerAppStateManagerEmitter,
-};
+use crate::state::{AppState, EnhancerAppStateManager, EnhancerAppStateManagerEmitter};
 use log::info;
 use tauri::AppHandle;
 use tauri_plugin_store::StoreExt;
